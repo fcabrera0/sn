@@ -1,0 +1,54 @@
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="text-center">
+      <div id="error-msg"></div>
+    </div>
+    <div class="card">
+      <form id="login" action="javascript:void(0)" onsubmit="login(); return false;">
+        <div class="card-body">
+          <div class="form-group">
+            <label>Email</label>
+            <input name="email" type="email" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input name="password" type="password" class="form-control" required>
+          </div>
+        </div>
+        <div class="text-right card-footer">
+          <a href="/signup" class="btn btn-neutral btn-sm">I'm not registered</a>
+          <button class="btn btn-primary btn-sm">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function login() {
+    var form = document.getElementById('login')
+    $.post('/auth/open', {
+      email: form.email.value,
+      password: form.password.value
+    }, function (data) {
+      data = JSON.parse(data)
+      if(data.success === 1) {
+        Cookies.set('session', data.id)
+        location.href = '/'
+      }
+      else {
+        var msg = '<strong>Error:</strong> '
+        if(data.code === 1) msg += 'Missing parameters'
+        else if(data.code === 2) msg += 'The email is not linked to any account'
+        else if(data.code === 3) msg += 'Wrong password'
+        $('#error-msg').html(
+            $('<div class="alert alert-danger" role="alert">').append(
+                $('<button type="button" class="close" data-dismiss="alert" aria-label="Close">').html(
+                    $('<span aria-hidden="true">').html('&times;')
+                ),
+                msg
+            )
+        )
+      }
+    })
+  }
+</script>

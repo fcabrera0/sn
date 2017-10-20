@@ -1,0 +1,6 @@
+production:
+  clients:
+    default:
+      database: sn
+      hosts:
+        - localhost:27017
