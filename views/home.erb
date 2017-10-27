@@ -1,23 +1,140 @@
-<div class="row justify-content-center gutter-sm">
+<div class="row justify-content-center gutter-sm" id="app">
   <div class="col-6">
     <div class="card">
-      <form id="new-post" action="javascript:void(0)" method="post" onsubmit="submitPost(); return false;">
+      <form action="javascript:void(0)" method="post" onsubmit="app.submitPost(); return false;">
         <div class="card-body">
-          <textarea name="content" class="form-control no-border no-padding" placeholder="Write something..." style="height: 3.6em;"></textarea>
+          <textarea v-model="content" class="form-control no-border no-padding" placeholder="Write something..." style="height: 3.6em;"></textarea>
         </div>
-        <div class="card-footer text-right">
-          <a href="#" class="btn btn-neutral btn-sm btn-icon">
-            <i class="fa fa-clock-o" aria-hidden="true"></i>
-          </a>
-          <button class="btn btn-primary btn-sm">Post</button>
+        <div class="card-body border-top no-padding" hidden></div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col">
+              <a href="#" class="btn btn-neutral btn-sm btn-icon">
+                <i class="fa fa-picture-o" aria-hidden="true"></i>
+              </a>
+              <a href="#" class="btn btn-neutral btn-sm btn-icon">
+                <i class="fa fa-video-camera" aria-hidden="true"></i>
+              </a>
+            </div>
+            <div class="col col-auto">
+              <a href="#" class="btn btn-neutral btn-sm btn-icon">
+                <i class="fa fa-clock-o" aria-hidden="true"></i>
+              </a>
+              <button class="btn btn-primary btn-sm">Post</button>
+            </div>
+          </div>
         </div>
       </form>
     </div>
-    <div id="post-section"></div>
+    <br>
+    <div v-for="e in posts">
+      <div class="card post-card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col col-auto"></div>
+            <div class="col">
+              <a href="#"><strong>{{ userProfile[e.user_id].firstname }} {{ userProfile[e.user_id].lastname }}</strong></a>
+              <br>
+              <a href="#" class="post-meta"><small>{{ makeTime(e.timestamp) }}</small></a>
+            </div>
+            <div class="col col-auto">
+              <div class="dropdown">
+                <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <a href="#" class="dropdown-item">Hide</a>
+                  <a href="#" class="dropdown-item">Report</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-content">
+            {{ e.content }}
+          </div>
+          <hr>
+          <div class="feedback-btn-group">
+            <a href="#" class="feedback-btn" @click="pressedLike(e.id)">
+              <i class="fa fa-lg fa-thumbs-o-up fa-fw" aria-hidden="true"></i> Like
+            </a>
+            <a href="#" class="feedback-btn" @click="commentsVisible[e.id] = !commentsVisible[e.id]">
+              <i class="fa fa-lg fa-comment-o fa-fw" aria-hidden="true"></i> Comment
+            </a>
+            <div class="dropdown">
+              <a href="#" class="feedback-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-lg fa-share fa-fw" aria-hidden="true"></i> Share
+              </a>
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item">Copy link</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="commentsVisible[e.id]" class="card-footer">
+
+        </div>
+      </div>
+      <br>
+    </div>
   </div>
 </div>
 <script>
-  function submitPost() {
+  var app = new Vue({
+    el: '#app',
+    data: {
+      content: null,
+      posts: [],
+      commentsVisible: {},
+      userProfile: {}
+    },
+    methods: {
+      pressedLike: function () {
 
-  }
+      },
+      makeTime: function(date) {
+        var months = [
+            'January', 'February', 'March',
+            'June', 'July', 'August', 'September',
+            'October', 'November', 'December'
+        ]
+        var diff = Date.now() - date.getTime()
+        if(diff / 1000 < 60) return `${Math.floor(diff / 1000)} seconds`
+        else if(diff / (1000 * 60) < 60) return `${Math.floor(diff / (1000*60))} minutes`
+        else if(diff / (1000 * 3600) < 24) return `${Math.floor(diff / (1000*3600))} hours`
+        else return `${date.getDate()} ${months[date.getMonth()]} at ${date.getHours()}:${date.getMinutes()}`
+      },
+      getUserProfile: function(id) {
+        $.get('/user/profile', { id: id }, data => Vue.set(this.userProfile, id, JSON.parse(data)))
+      },
+      getPosts: function () {
+        $.get('/posts/latest?count=20', data => {
+          data = JSON.parse(data)
+          data.forEach(e => {
+            e.timestamp = new Date(e.timestamp)
+            if(!this.userProfile.hasOwnProperty(e.user_id)) this.getUserProfile(e.user_id)
+            if(!this.commentsVisible.hasOwnProperty(e.id)) Vue.set(this.commentsVisible, e.id, false)
+          })
+          this.posts = data
+        })
+        setTimeout(this.getPosts, 3000)
+      },
+      submitPost: function () {
+        $.post('/posts/new', {
+          content: this.content
+        }, data => {
+          data = JSON.parse(data)
+          console.log(data)
+          if(data.success === 1) {
+            this.content = null
+            this.getPosts()
+          }
+        })
+      }
+    },
+    mounted: function () {
+      this.getPosts()
+    }
+  })
 </script>

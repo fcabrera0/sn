@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/cookies'
 require_relative 'post'
 require_relative 'auth'
+require_relative 'profile'
 require_relative 'models'
 
 Mongoid.load!('mongoid.yml', :production)
@@ -9,8 +10,11 @@ set :port, 3000
 
 use AuthController
 use PostController
+use ProfileController
 
 before do
+  @path = request.path_info
+  @ip = request.ip
   begin
     @session = Session.find(cookies['session'])
     @user = @session.user
@@ -20,50 +24,10 @@ before do
 end
 
 get '/' do
-  @title = 'Home'
   redirect '/login' if @user.blank?
-  redirect '/profile/edit' if @user.profile.blank? or @user.profile.identity.blank?
+  redirect '/profile/manage' if @user.profile.blank? or @user.profile.identity.blank?
+  @title = 'Home'
   erb :home
-end
-
-get '/profile/edit' do
-  @title = 'Edit my profile'
-  @user.profile.build(
-      identity: {},
-      about: {},
-      privacy: {}
-  ) if @user.profile.blank?
-  erb :edit_profile
-end
-
-post '/profile/identity' do
-  [:firstname, :lastname, :gender].each do |param|
-    return {success: 0, code: 1}.to_json unless params.include? param
-  end
-
-  profile = @user.profile
-  profile.identity = {
-      firstname: params[:firstname],
-      lastname: params[:lastname],
-      gender: params[:gender]
-  }
-  profile.save
-
-  {success: 1}.to_json
-end
-
-post '/profile/about' do
-  [].each do |param|
-    return {success: 0, code: 1}.to_json unless params.include? param
-  end
-
-  profile = @user.profile
-  profile.about = {
-
-  }
-  profile.save
-
-  {success: 1}.to_json
 end
 
 get '/login' do

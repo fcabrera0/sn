@@ -17,11 +17,11 @@ textarea {
 }
 
 .no-border {
-    border: none;
+    border: none!important;
 }
 
 .no-padding {
-    padding: 0;
+    padding: 0!important;
 }
 
 .form-control {
@@ -57,7 +57,7 @@ textarea {
 
 .btn.btn-neutral {
     border: 1px solid rgba(0,0,0,.125);
-    color: #c0392b;
+    color: #666;
     background-color: #fff;
 }
 
@@ -73,7 +73,10 @@ textarea {
     border-radius: 0.1875rem;
 }
 
-.card-header, .dropdown-card-header,
+.card-header, .dropdown-card-header {
+    padding: .5em .75em;
+}
+
 .card-body, .dropdown-card-body,
 .card-footer, .dropdown-card-footer {
     padding: .75em;
@@ -91,6 +94,14 @@ textarea {
     border: 1px solid rgba(0,0,0,.125);
 }
 
+.card.card-accordion-item>.card-header {
+    border-bottom: none;
+}
+
+.card.card-accordion-item>.card-body {
+    border-top: 1px solid rgba(0,0,0,.125);
+}
+
 .dropdown-card-header {
     border-bottom: 1px solid rgba(0,0,0,.125);
 }
@@ -100,10 +111,14 @@ textarea {
     border-top: 1px solid rgba(0,0,0,.125);
 }
 
-.card-footer>.btn:not(:first-child),
-.dropdown-card-footer>.btn:not(:first-child),
-.card-footer .text-right>.btn:not(:first-child),
-.dropdown-card-footer .text-right>.btn:not(:first-child){
+.border-top {
+    border-top: 1px solid rgba(0,0,0,.125);
+}
+
+.card-footer .btn:not(:first-child),
+.dropdown-card-footer .btn:not(:first-child),
+.card-footer .text-right .btn:not(:first-child),
+.dropdown-card-footer .text-right .btn:not(:first-child){
     margin-left: .5em;
 }
 
@@ -131,4 +146,40 @@ html, body, .container, .wrapper {
 .row.gutter-sm {
     margin-left: -.5em;
     margin-right: -.5em;
+}
+
+.bg-light {
+    background-color: #f7f8f9!important;
+}
+
+hr {
+   margin: .5em .5em .75em .5em;
+}
+
+.card-content {
+    padding: .25em .5em;
+}
+
+.feedback-btn, .feedback-btn:hover {
+    padding: .25em .5em;
+    color: #666;
+}
+
+.feedback-btn-group>div {
+    display: inline;
+}
+
+.comment-input {
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+}
+
+.card.post-card>.card-header {
+    background-color: #fff;
+    border-bottom: none;
+}
+
+.post-meta, .post-meta:hover {
+    color: #555;
 }

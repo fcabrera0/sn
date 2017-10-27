@@ -12,9 +12,29 @@ class User
 
   has_one :profile
   has_many :sessions
+  has_many :posts
 
   accepts_nested_attributes_for :profile
   accepts_nested_attributes_for :sessions
+  accepts_nested_attributes_for :posts
+end
+
+class Friendship
+  include Mongoid::Document
+
+  field :from, type: BSON::ObjectId
+  field :dest, type: BSON::ObjectId
+  field :status, type: Integer, default: 0
+  field :timestamp, type: DateTime, default: -> { DateTime.now }
+end
+
+class Post
+  include Mongoid::Document
+
+  field :content, type: String
+  field :timestamp, type: DateTime, default: -> { DateTime.now }
+
+  belongs_to :user
 end
 
 class Profile

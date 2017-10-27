@@ -1,11 +1,11 @@
 <div class="row justify-content-center gutter-sm">
-  <div class="col-6" id="profile" data-children=".card">
-    <div class="card">
+  <div class="col-6" id="profile" data-children=".card-accordion-item">
+    <div class="card card-accordion-item">
       <div class="card-header">
         <a href="#identity" data-parent="#profile" data-toggle="collapse">
           <div class="row">
             <div class="col">Identity</div>
-            <div class="col-1">
+            <div class="col-auto">
               <i class="fa fa-chevron-down" aria-hidden="true"></i>
             </div>
           </div>
@@ -39,12 +39,12 @@
       </div>
     </div>
     <br>
-    <div class="card">
+    <div class="card card-accordion-item">
       <div class="card-header">
         <a href="#about" data-parent="#profile" data-toggle="collapse">
           <div class="row">
             <div class="col">About me</div>
-            <div class="col-1">
+            <div class="col-auto">
               <i class="fa fa-chevron-down" aria-hidden="true"></i>
             </div>
           </div>
@@ -61,12 +61,12 @@
       </div>
     </div>
     <br>
-    <div class="card">
+    <div class="card card-accordion-item">
       <div class="card-header">
         <a href="#privacy" data-parent="#profile" data-toggle="collapse">
           <div class="row">
             <div class="col">Privacy</div>
-            <div class="col-1">
+            <div class="col-auto">
               <i class="fa fa-chevron-down" aria-hidden="true"></i>
             </div>
           </div>
@@ -96,6 +96,24 @@
       if(data.success === 0) {
 
       }
+    })
+  }
+
+  function saveAbout() {
+    var form = document.getElementById('about-form')
+    $.post('/profile/about', {
+
+    }, function (data) {
+      data = JSON.parse(data)
+    })
+  }
+
+  function savePrivacy() {
+    var form = document.getElementById('privacy-form')
+    $.post('/profile/privacy', {
+
+    }, function (data) {
+      data = JSON.parse(data)
     })
   }
 </script>
